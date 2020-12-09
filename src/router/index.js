@@ -3,7 +3,6 @@ import VueRouter from 'vue-router';
 
 Vue.use(VueRouter);
 
-import Home from '../views/TypeNav';
 import Login from '../views/Login';
 import Register from '../views/Register';
 export default new VueRouter({
@@ -11,10 +10,6 @@ export default new VueRouter({
 	mode: 'history',
 
 	routes: [
-		{
-			path: '/',
-			component: Home
-		},
 		{
 			path: '/login',
 			component: Login
