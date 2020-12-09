@@ -1,5 +1,8 @@
 import Vue from 'vue';
 import App from './App.vue';
+
+//引入路由与vuex
+import store from './store';
 import router from './router';
 
 //引入公共样式
@@ -15,5 +18,6 @@ new Vue({
 		Vue.prototype.$bus = this;
 	},
 	render: (h) => h(App),
-	router
+	router,
+	store
 }).$mount('#app');

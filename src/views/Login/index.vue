@@ -17,11 +17,11 @@
             <form action="##">
               <div class="input-text clearFix">
                 <span></span>
-                <input type="text" placeholder="邮箱/用户名/手机号">
+                <input type="text" placeholder="邮箱/用户名/手机号" v-model="user.phone">
               </div>
               <div class="input-text clearFix">
                 <span class="pwd"></span>
-                <input type="text" placeholder="请输入密码">
+                <input type="text" placeholder="请输入密码" v-model="user.password">
               </div>
               <div class="setting clearFix">
                 <label class="checkbox inline">
@@ -30,7 +30,7 @@
                 </label>
                 <span class="forget">忘记密码？</span>
               </div>
-              <button class="btn">登&nbsp;&nbsp;录</button>
+              <button class="btn" @click="submit">登&nbsp;&nbsp;录</button>
             </form>
 
             <div class="call clearFix">
@@ -66,8 +66,39 @@
 </template>
 
 <script>
+  import { mapState} from 'vuex';
+
   export default {
     name: 'Login',
+
+    data() {
+      return  {
+            user: {
+              phone:"",
+                password:"",
+            },
+      }
+    },
+
+    computed:{
+      //获取登陆成功后请求回来的token和name
+      ...mapState({
+        token:(state)=> state.user.token,
+        name:(state)=> state.user.name,
+      })
+    },
+    methods:{
+
+      async submit(){
+        //1.提取输入的电话和密码
+        const { phone,password } = this.user;
+        //2.调用actions中的login方法发送请求
+        await this.$store.dispatch("login",{ phone,password })
+
+        console.log(this.token,this.name);
+      }
+    },
+
   }
 </script>
 
