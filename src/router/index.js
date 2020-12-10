@@ -5,18 +5,31 @@ Vue.use(VueRouter);
 
 import Login from '../views/Login';
 import Register from '../views/Register';
-export default new VueRouter({
-	//使用history模式
-	mode: 'history',
+import Home from '../views/Home'
+import Search from '../views/Search'
 
-	routes: [
-		{
-			path: '/login',
-			component: Login
-		},
-		{
-			path: '/register',
-			component: Register
-		}
-	]
+
+export default new VueRouter({
+  //使用history模式
+  mode: 'history',
+
+  routes: [
+    {
+      path: "/",
+      component: Home
+    },
+    {
+      path: '/login',
+      component: Login
+    },
+    {
+      path: '/register',
+      component: Register
+    },
+    {
+      name: "search",
+      path: "/search",
+      component: Search
+    }
+  ]
 });

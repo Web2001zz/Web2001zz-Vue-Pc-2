@@ -30,7 +30,7 @@
         </div>
         <div class="header-search">
           <input type="text" placeholder="请输入商品关键词" />
-          <button>搜索</button>
+          <button @click="search">搜索</button>
         </div>
       </div>
     </header>
@@ -39,8 +39,14 @@
 
 <script>
 export default {
-  name: "Header",
-};
+  name: 'Header',
+
+  methods: {
+    search() {
+      this.$router.push('/search')
+    },
+  },
+}
 </script>
 
 <style lang="less" scoped>
