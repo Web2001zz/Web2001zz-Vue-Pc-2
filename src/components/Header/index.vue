@@ -5,7 +5,11 @@
         <div class="header-topBG">
           <div class="header-top-left">
             <h2>尚品汇奥利给!</h2>
-            <p>
+            <p v-if="$store.state.user.token">
+              欢迎您：{{$store.state.user.name}}
+              <span>退出登录</span>
+            </p>
+            <p v-else>
               请 <router-link to="/login">登录</router-link>
               <router-link to="/register">免费注册</router-link>
             </p>

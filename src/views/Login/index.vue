@@ -14,31 +14,46 @@
           </ul>
 
           <div class="content">
-            <form action="##">
-              <div class="input-text clearFix">
-                <span></span>
-                <input
-                  type="text"
-                  placeholder="邮箱/用户名/手机号"
-                  v-model="user.phone"
-                />
-              </div>
-              <div class="input-text clearFix">
-                <span class="pwd"></span>
-                <input
-                  type="text"
-                  placeholder="请输入密码"
-                  v-model="user.password"
-                />
-              </div>
+            <form action="##" @submit.prevent="submit">
+              <ValidationProvider
+                rules="length|required|phone"
+                v-slot="{ errors }"
+              >
+                <div class="input-text clearFix">
+                  <span></span>
+                  <input
+                    type="text"
+                    placeholder="邮箱/用户名/手机号"
+                    v-model="user.phone"
+                  />
+                  <p style="color: red">{{ errors[0] }}</p>
+                </div>
+              </ValidationProvider>
+              <ValidationProvider rules="passwordlengh" v-slot="{ errors }">
+                <div class="input-text clearFix">
+                  <span class="pwd"></span>
+                  <input
+                    type="password"
+                    placeholder="请输入密码"
+                    v-model="user.password"
+                  />
+                  <p style="color: red">{{ errors[0] }}</p>
+                </div>
+              </ValidationProvider>
               <div class="setting clearFix">
                 <label class="checkbox inline">
-                  <input name="m1" type="checkbox" value="2" checked="" />
+                  <input
+                    name="m1"
+                    type="checkbox"
+                    value="2"
+                    checked=""
+                    v-model="isAutoLogin"
+                  />
                   自动登录
                 </label>
                 <span class="forget">忘记密码？</span>
               </div>
-              <button class="btn" @click="submit">登&nbsp;&nbsp;录</button>
+              <button class="btn" type="submit">登&nbsp;&nbsp;录</button>
             </form>
 
             <div class="call clearFix">
@@ -75,7 +90,37 @@
 </template>
 
 <script>
+import { ValidationProvider, extend } from 'vee-validate'
+import { required } from 'vee-validate/dist/rules'
 import { mapState } from 'vuex'
+
+extend('required', {
+  ...required,
+  message: '手机号必须填写',
+})
+
+extend('length', {
+  validate(value) {
+    return value.length === 11
+  },
+  message: '手机号长度必须为11位',
+})
+
+extend('phone', {
+  validate(value) {
+    return /^(13[0-9]|14[01456879]|15[0-3,5-9]|16[2567]|17[0-8]|18[0-9]|19[0-3,5-9])\d{8}$/.test(
+      value
+    )
+  },
+  message: '手机号不符合规范',
+})
+
+extend('passwordlengh', {
+  validate(value) {
+    return value.length >= 6 && value.length <= 12
+  },
+  message: '请输入6——12位密码',
+})
 
 export default {
   name: 'Login',
@@ -86,9 +131,20 @@ export default {
         phone: '',
         password: '',
       },
+
+      isAutoLogin: true, //是否自动登录
+      isLoading: false, //判断是否正在登录
     }
   },
 
+  //用户选择自动登录后 下次登录会在创建阶段跳转
+  created() {
+    //判断是否有token
+    if (this.token) {
+      this.$router.replace('/')
+    }
+  },
+  //获取登录成功后的token和name
   computed: {
     //获取登陆成功后请求回来的token和name
     ...mapState({
@@ -96,15 +152,36 @@ export default {
       name: (state) => state.user.name,
     }),
   },
+
   methods: {
     async submit() {
-      //1.提取输入的电话和密码
-      const { phone, password } = this.user
-      //2.调用actions中的login方法发送请求
-      await this.$store.dispatch('login', { phone, password })
+      try {
+        //先判断是否正在登陆 防止用户点击次数过多引起重复发送请求
+        if (this.isLoading) return
+        this.isLoading = true
+        //1.提取输入的电话和密码
+        const { phone, password } = this.user
+        //2.调用actions中的login方法发送请求
+        await this.$store.dispatch('login', { phone, password })
 
-      console.log(this.token, this.name)
+        console.log(this.token, this.name)
+
+        //将token和name放进缓存中
+        if (this.isAutoLogin) {
+          localStorage.setItem('token', this.token)
+          localStorage.setItem('name', this.name)
+        }
+
+        //跳转到home界面
+        this.$router.push('/')
+      } catch {
+        this.isLoading = false
+      }
     },
+  },
+
+  components: {
+    ValidationProvider,
   },
 }
 </script>

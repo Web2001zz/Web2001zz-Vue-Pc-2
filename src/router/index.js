@@ -20,11 +20,17 @@ export default new VueRouter({
     },
     {
       path: '/login',
-      component: Login
+      component: Login,
+      meta: {
+        isFooterHide: true
+      }
     },
     {
       path: '/register',
-      component: Register
+      component: Register,
+      meta: {
+        isFooterHide: true
+      }
     },
     {
       name: "search",
